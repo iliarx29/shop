@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Core.Entities;
+using Core.Specification;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Services.DTOs;
 using Services.Interfaces;
 
 namespace Services.Implementation
@@ -12,26 +15,28 @@ namespace Services.Implementation
     public class ProductService : IProductService
     {
         private readonly ApplicationContext _context;
+        private readonly IMapper _mapper;
 
-        public ProductService(ApplicationContext context)
+        public ProductService(ApplicationContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
-        public async Task<Product?> GetProductByIdAsync(int id)
+        public async Task<IReadOnlyList<ProductToReturn>> FindProductsWithSpec(ISpecification<Product> spec)
         {
-            return await _context.Products
-                .Include(x => x.ProductType)
-                .Include(x => x.ProductBrand)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var products = await SpecificationEvaluator<Product>.GetQuery(_context.Set<Product>().AsQueryable(), spec)
+                                .ToListAsync();
+
+            return _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturn>>(products); 
         }
 
-        public async Task<IReadOnlyList<Product>> GetProductsAsync()
+        public async Task<ProductToReturn?> FindProductWithSpec(ISpecification<Product> spec)
         {
-            return await _context.Products
-                .Include(x => x.ProductType)
-                .Include(x => x.ProductBrand)
-                .ToListAsync();
+            var product = await SpecificationEvaluator<Product>.GetQuery(_context.Set<Product>().AsQueryable(), spec)
+                                .FirstOrDefaultAsync();
+                                
+            return _mapper.Map<Product, ProductToReturn>(product);
         }
     }
 }
