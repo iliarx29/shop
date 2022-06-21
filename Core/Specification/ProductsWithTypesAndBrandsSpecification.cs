@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Core.Entities;
 
 namespace Core.Specification
@@ -20,6 +15,6 @@ namespace Core.Specification
         {
             AddInclude(x => x.ProductType);
             AddInclude(x => x.ProductBrand);
-        }
+        } 
     }
 }

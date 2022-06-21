@@ -36,7 +36,7 @@ namespace Services.Implementation
             var product = await SpecificationEvaluator<Product>.GetQuery(_context.Set<Product>().AsQueryable(), spec)
                                 .FirstOrDefaultAsync();
                                 
-            return _mapper.Map<Product, ProductToReturn>(product);
+            return _mapper.Map<Product?, ProductToReturn>(product);
         }
     }
 }
