@@ -15,6 +15,6 @@ namespace Services
         {
             service.AddDbContext<ApplicationContext>(x => 
                     x.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
-        }
+        }      
     }
 }
